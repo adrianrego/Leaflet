@@ -97,15 +97,14 @@ L.Map = L.Class.extend({
 		    paddingBR = L.point(options.paddingBottomRight || options.padding || [0, 0]),
 
 		    zoom = this.getBoundsZoom(bounds, false, paddingTL.add(paddingBR)),
+				mZoom = options && options.maxZoom ? Math.min(options.maxZoom, zoom) : zoom,
 		    paddingOffset = paddingBR.subtract(paddingTL).divideBy(2),
 
-		    swPoint = this.project(bounds.getSouthWest(), zoom),
-		    nePoint = this.project(bounds.getNorthEast(), zoom),
-		    center = this.unproject(swPoint.add(nePoint).divideBy(2).add(paddingOffset), zoom);
+		    swPoint = this.project(bounds.getSouthWest(), mZoom),
+		    nePoint = this.project(bounds.getNorthEast(), mZoom),
+		    center = this.unproject(swPoint.add(nePoint).divideBy(2).add(paddingOffset), mZoom);
 
-		zoom = options && options.maxZoom ? Math.min(options.maxZoom, zoom) : zoom;
-
-		return this.setView(center, zoom, options);
+		return this.setView(center, mZoom, options);
 	},
 
 	fitWorld: function (options) {

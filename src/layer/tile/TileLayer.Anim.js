@@ -29,6 +29,10 @@ L.TileLayer.include({
 		// force reflow
 		L.Util.falseFn(bg.offsetWidth);
 
+		if (this._map.getZoom() < this.options.minZoom) {
+			this._clearBgBuffer();
+		}
+
 		this._animating = false;
 	},
 
