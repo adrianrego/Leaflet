@@ -96,15 +96,17 @@ L.Map = L.Class.extend({
 		var paddingTL = L.point(options.paddingTopLeft || options.padding || [0, 0]),
 		    paddingBR = L.point(options.paddingBottomRight || options.padding || [0, 0]),
 
-		    zoom = this.getBoundsZoom(bounds, false, paddingTL.add(paddingBR)),
-				mZoom = options && options.maxZoom ? Math.min(options.maxZoom, zoom) : zoom,
-		    paddingOffset = paddingBR.subtract(paddingTL).divideBy(2),
+		    zoom = this.getBoundsZoom(bounds, false, paddingTL.add(paddingBR));
 
-		    swPoint = this.project(bounds.getSouthWest(), mZoom),
-		    nePoint = this.project(bounds.getNorthEast(), mZoom),
-		    center = this.unproject(swPoint.add(nePoint).divideBy(2).add(paddingOffset), mZoom);
+		zoom = (options.maxZoom) ? Math.min(options.maxZoom, zoom) : zoom;
 
-		return this.setView(center, mZoom, options);
+		var paddingOffset = paddingBR.subtract(paddingTL).divideBy(2),
+
+		    swPoint = this.project(bounds.getSouthWest(), zoom),
+		    nePoint = this.project(bounds.getNorthEast(), zoom),
+		    center = this.unproject(swPoint.add(nePoint).divideBy(2).add(paddingOffset), zoom);
+
+		return this.setView(center, zoom, options);
 	},
 
 	fitWorld: function (options) {
@@ -567,12 +569,12 @@ L.Map = L.Class.extend({
 		var loading = !this._loaded;
 		this._loaded = true;
 
+		this.fire('viewreset', {hard: !preserveMapOffset});
+
 		if (loading) {
 			this.fire('load');
 			this.eachLayer(this._layerAdd, this);
 		}
-
-		this.fire('viewreset', {hard: !preserveMapOffset});
 
 		this.fire('move');
 
